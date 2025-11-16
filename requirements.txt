@@ -1,0 +1,23 @@
+# basic need
+pandas
+numpy
+
+# simple visualization
+matplotlib
+seaborn
+
+# jupyter notebook
+ipykernel
+
+# machine learning
+scikit-learn
+
+# huggingface libraries
+huggingface_hub
+transformers
+
+# deep learning
+torch
+
+# to read .env
+python-dotenv
