@@ -1,9 +1,9 @@
 import logging
-from datasets import load_dataset
+from datasets import load_dataset, ClassLabel
 from torch.utils.data import Dataset
 
-DATASET_NAME = "Daniil Or/SemEval-2026-Task13"
-DATASET_TASK = "task_a"
+DATASET_NAME = "DaniilOr/SemEval-2026-Task13"
+DATASET_TASK = "A"
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -35,6 +35,12 @@ class RawCodeDataset(Dataset):
             logger.info("Creating stratification column")
             full_dataset = full_dataset.map(create_stratification_column)
 
+            try:
+                full_dataset = full_dataset.class_encode_column("stratify_col")
+            except AttributeError:
+                # Fallback for older datasets versions
+                full_dataset = full_dataset.cast_column("stratify_col", ClassLabel(names=list(set(full_dataset["stratify_col"]))))
+
             if len(full_dataset) > sample_size:
                 proportion = sample_size / len(full_dataset)
 
@@ -42,9 +48,9 @@ class RawCodeDataset(Dataset):
                     test_size=proportion,
                     shuffle=True,
                     seed=10,
-                    stratify_by_column="label"
+                    stratify_by_column="stratify_col"
                 )['test'] 
-                # clearn up the stratify column after balancing
+                # clean up the stratify column after balancing
                 self.raw_dataset = self.raw_dataset.remove_columns(['stratify_col']) 
             else:
                 logger.warning("Sample size is larger than dataset size; using full dataset.")
@@ -66,38 +72,34 @@ class RawCodeDataset(Dataset):
             
 def create_stratification_column(example):
     """
-    combines 'label' and 'programming_language' into a single column for stratification
+    combines 'label' and 'language' into a single column for stratification
     """
     return {
-        'stratify_col': f"{example['label']}_{example['programming_language']}"
+        'stratify_col': f"{example['label']}_{example['language']}"
     }
 
 if __name__ == '__main__':
     """
     This block allows you to run this file directly to test it
     """
-    logger.info("Running dataset.py as a script for testing...")
+    logger.info("--- TESTING DATASET LOADING ---")
     
-    # Test the 'train' split with 5000 samples
-    train_dataset = RawCodeDataset(
-        split='train', 
-        subsample=True, 
-        sample_size=5000
-    )
+    # Training Set (Subsampled & Stratified)
+    print("\n1. Loading Training Set...")
+    train_dataset = RawCodeDataset(split='train', subsample=True, sample_size=5000)
     
+    # Validation Set (Subsampled & Stratified)
+    print("\n2. Loading Validation Set...")
+    val_dataset = RawCodeDataset(split='validation', subsample=True, sample_size=2000)
+    
+    # Test Set (Full - No Subsampling)
+    print("\n3. Loading Test Set...")
+    test_dataset = RawCodeDataset(split='test', subsample=False)
+
     print("\n" + "="*30)
-    print("  TESTING COMPLETE ")
+    print("  SUMMARY ")
     print("="*30)
-    print(f"Train dataset size: {len(train_dataset)}")
-    
-    # --- Check the balance of the training sample ---
-    print("\nChecking balance of 5000-sample training set:")
-    labels = [train_dataset[i]['label'] for i in range(len(train_dataset))]
-    label_0_count = sum(1 for label in labels if label == 0)
-    label_1_count = sum(1 for label in labels if label == 1)
-    
-    print(f"Label 0 (Human): {label_0_count} samples")
-    print(f"Label 1 (Machine): {label_1_count} samples")
-    print("These should be very close to 2500 each.")
-    print("\nNote: This sample is now also stratified by programming language.")
+    print(f"Train size: {len(train_dataset)}")
+    print(f"Val size:   {len(val_dataset)}")
+    print(f"Test size:  {len(test_dataset)}")
     print("="*30)
