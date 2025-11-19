@@ -14,6 +14,7 @@ scikit-learn
 
 # huggingface libraries
 huggingface_hub
+hf_xet
 transformers
 
 # deep learning
@@ -21,3 +22,6 @@ torch
 
 # to read .env
 python-dotenv
+
+# dataset
+datasets
