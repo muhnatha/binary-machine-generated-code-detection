@@ -44,13 +44,16 @@ class FusedDataCollator:
 
         # PATH A: Tokenize for CodeBERT
         # return_tensors='pt' gives us PyTorch tensors directly
-        tokenized = self.tokenizer(
-            texts,
-            padding=True,
-            truncation=True,
-            max_length=self.max_length,
-            return_tensors="pt"
-        )
+        # tokenized = self.tokenizer(
+        #     texts,
+        #     padding=True,
+        #     truncation=True,
+        #     max_length=self.max_length,
+        #     return_tensors="pt"
+        # )
+
+        input_ids = None
+        attention_mask = None
 
         # PATH B: Extract Meta-Features (The Research Part)
         # We loop through the batch and calculate features for each sample.
@@ -86,8 +89,8 @@ class FusedDataCollator:
         labels_tensor = torch.tensor(labels, dtype=torch.long)
 
         return {
-            'input_ids': tokenized['input_ids'],
-            'attention_mask': tokenized['attention_mask'],
+            'input_ids': input_ids,
+            'attention_mask': attention_mask,
             'meta_features': meta_features_tensor,
             'labels': labels_tensor,
             'raw_code': texts
@@ -137,6 +140,6 @@ if __name__ == '__main__':
         logger.info(f"Saved {len(df)} rows to {output_path}")
 
     # You can change these numbers or set sample_size=None for the full data
-    save_split('train', 'train_features.csv', sample_size=5000)
-    save_split('validation', 'validation_features.csv', sample_size=2000)
-    save_split('test', 'test_features.csv', sample_size=None) 
+    save_split('train', 'train_featureshk.csv', sample_size=100000)
+    save_split('validation', 'validation_featureshk.csv', sample_size=10000)
+    #save_split('test', 'test_features.csv', sample_size=None) 
