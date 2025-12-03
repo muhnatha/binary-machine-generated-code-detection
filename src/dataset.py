@@ -67,7 +67,9 @@ class RawCodeDataset(Dataset):
         item = self.raw_dataset[idx]
         return{
             'code': item['code'],
-            'label': item['label']
+            'label': item['label'],
+            'language': item['language']
+
         }
             
 def create_stratification_column(example):
