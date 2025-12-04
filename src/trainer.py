@@ -36,7 +36,7 @@ MAX_LEN = 512
 # --- OPTIMIZED SETTINGS ---
 BATCH_SIZE = 32            
 ACCUMULATION_STEPS = 1   
-EPOCHS = 5           
+EPOCHS = 3           
 PATIENCE = 3              
 LEARNING_RATE = 5e-5      
 CLASS_NAMES = ['Human-Written', 'Machine-Generated']
