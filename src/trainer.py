@@ -34,11 +34,11 @@ MODEL_NAME = "microsoft/unixcoder-base"
 MAX_LEN = 512            
 
 # --- OPTIMIZED SETTINGS ---
-BATCH_SIZE = 1            
-ACCUMULATION_STEPS = 16   
-EPOCHS = 3           
+BATCH_SIZE = 32            
+ACCUMULATION_STEPS = 1   
+EPOCHS = 5           
 PATIENCE = 3              
-LEARNING_RATE = 1e-5      
+LEARNING_RATE = 5e-5      
 CLASS_NAMES = ['Human-Written', 'Machine-Generated']
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -331,8 +331,8 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     
     print(f"Loading datasets (Subsample={USE_SUBSAMPLE})...")
-    train_raw = RawCodeDataset(split='train', subsample=USE_SUBSAMPLE, sample_size=5000)
-    val_raw = RawCodeDataset(split='validation', subsample=USE_SUBSAMPLE, sample_size=1000)
+    train_raw = RawCodeDataset(split='train', subsample=USE_SUBSAMPLE, sample_size=50000)
+    val_raw = RawCodeDataset(split='validation', subsample=USE_SUBSAMPLE, sample_size=10000)
     test_raw = RawCodeDataset(split='test', subsample=False)
 
     train_data_filtered = filter_dataset_codet_m4(train_raw, tokenizer)
