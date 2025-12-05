@@ -244,9 +244,9 @@ def main():
     
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
-    print("Loading Full Datasets...")
-    train_raw = RawCodeDataset('train', subsample=False)
-    val_raw = RawCodeDataset('validation', subsample=False)
+    SUBSAMPLE = True
+    train_raw = RawCodeDataset('train', subsample=SUBSAMPLE, sample_size=5000)
+    val_raw = RawCodeDataset('validation', subsample=SUBSAMPLE, sample_size=2000)
     test_raw = RawCodeDataset('test', subsample=False)
 
     train_data = [{'code': x['code'], 'label': x['label'], 'language': x['language']} for x in train_raw]
