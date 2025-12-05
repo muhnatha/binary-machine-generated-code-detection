@@ -1,4 +1,5 @@
 import os
+
 # Standard memory config is fine for Colab
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
@@ -6,19 +7,24 @@ import json
 import torch
 import torch.nn as nn
 import numpy as np
-import gc
 import re
 import random
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from torch.utils.data import Dataset, DataLoader
-from transformers import AutoTokenizer, AutoModel, AutoConfig
+from transformers import AutoTokenizer, AutoModel
 from torch.optim import AdamW
-from sklearn.metrics import f1_score, classification_report, confusion_matrix, accuracy_score, precision_recall_fscore_support
+from sklearn.metrics import (
+    f1_score,
+    classification_report,
+    confusion_matrix,
+    accuracy_score,
+    precision_recall_fscore_support,
+)
 from tqdm.auto import tqdm
 from torch.cuda.amp import autocast, GradScaler
-from collections import Counter 
+from collections import Counter
 
 try:
     from src.dataset import RawCodeDataset
@@ -26,8 +32,9 @@ except ImportError:
     from dataset import RawCodeDataset
 
 try:
-    from tree_sitter import Language, Parser
+    from tree_sitter import Parser
     import tree_sitter_languages
+
     TREE_SITTER_AVAILABLE = True
 except ImportError:
     print("WARNING: tree-sitter not installed.")
@@ -39,15 +46,16 @@ METRICS_SAVE_PATH = os.path.join(OUTPUT_DIR, "metrics.json")
 LANGUAGE_METRICS_PATH = os.path.join(OUTPUT_DIR, "language_metrics.json")
 MODEL_NAME = "microsoft/unixcoder-base"
 
-MAX_LEN = 512             
-BATCH_SIZE = 8            
-ACCUMULATION_STEPS = 2   
-EPOCHS = 5               
-PATIENCE = 3              
-LEARNING_RATE = 2e-5      
-CLASS_NAMES = ['Human-Written', 'Machine-Generated']
+MAX_LEN = 512
+BATCH_SIZE = 8
+ACCUMULATION_STEPS = 2
+EPOCHS = 5
+PATIENCE = 3
+LEARNING_RATE = 2e-5
+CLASS_NAMES = ["Human-Written", "Machine-Generated"]
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+
 
 def set_seed(seed=42):
     """Sets the seed for reproducibility across all libraries."""
@@ -57,23 +65,32 @@ def set_seed(seed=42):
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
-    os.environ['PYTHONHASHSEED'] = str(seed)
+    os.environ["PYTHONHASHSEED"] = str(seed)
     print(f"Seed set to {seed}")
-    
+
+
 class ASTParser:
     def __init__(self):
         self.parsers = {}
         self.lang_map = {
-            'Python': 'python', 'Java': 'java', 'C++': 'cpp', 'Go': 'go',
-            'PHP': 'php', 'JavaScript': 'javascript', 'C': 'c',
-            'C#': 'c_sharp', 'Ruby': 'ruby'
+            "Python": "python",
+            "Java": "java",
+            "C++": "cpp",
+            "Go": "go",
+            "PHP": "php",
+            "JavaScript": "javascript",
+            "C": "c",
+            "C#": "c_sharp",
+            "Ruby": "ruby",
         }
 
     def get_parser(self, lang_name):
-        if not TREE_SITTER_AVAILABLE: return None
+        if not TREE_SITTER_AVAILABLE:
+            return None
         ts_lang = self.lang_map.get(lang_name)
-        if not ts_lang: return None
-        
+        if not ts_lang:
+            return None
+
         if ts_lang not in self.parsers:
             try:
                 parser = Parser()
@@ -86,7 +103,8 @@ class ASTParser:
 
     def parse_to_flattened_ast(self, code, lang_name):
         parser = self.get_parser(lang_name)
-        if not parser: return ""
+        if not parser:
+            return ""
         try:
             tree = parser.parse(bytes(code, "utf8"))
             cursor = tree.walk()
@@ -96,36 +114,44 @@ class ASTParser:
                 if not visited_children:
                     if cursor.node.is_named:
                         tokens.append(cursor.node.type)
-                    if cursor.goto_first_child(): continue
-                if cursor.goto_next_sibling(): visited_children = False
-                elif cursor.goto_parent(): visited_children = True
-                else: break
+                    if cursor.goto_first_child():
+                        continue
+                if cursor.goto_next_sibling():
+                    visited_children = False
+                elif cursor.goto_parent():
+                    visited_children = True
+                else:
+                    break
             return " ".join(tokens)
-        except Exception: return ""
+        except Exception:
+            return ""
+
 
 def clean_code_strict(code):
-    if pd.isna(code) or code == '': return ''
+    if pd.isna(code) or code == "":
+        return ""
     code = str(code)
-    code = re.sub(r'<[^>]+>', '', code)
-    lines = [line.rstrip() for line in code.split('\n') if line.strip()]
-    return '\n'.join(lines)
+    code = re.sub(r"<[^>]+>", "", code)
+    lines = [line.rstrip() for line in code.split("\n") if line.strip()]
+    return "\n".join(lines)
+
 
 class CodeDataset(Dataset):
     def __init__(self, data_source, tokenizer, max_len, lang_weights=None):
-        self.data_source = data_source 
+        self.data_source = data_source
         self.tokenizer = tokenizer
         self.max_len = max_len
         self.lang_weights = lang_weights
-        self.ast_parser = ASTParser() 
+        self.ast_parser = ASTParser()
 
     def __len__(self):
         return len(self.data_source)
 
     def __getitem__(self, index):
         item = self.data_source[index]
-        code_text = clean_code_strict(str(item['code']))
-        label = item['label']
-        language = item['language']
+        code_text = clean_code_strict(str(item["code"]))
+        label = item["label"]
+        language = item["language"]
 
         ast_text = self.ast_parser.parse_to_flattened_ast(code_text, language)
 
@@ -134,12 +160,12 @@ class CodeDataset(Dataset):
 
         encoding = self.tokenizer(
             code_text,
-            #ast_text,
+            # ast_text,
             add_special_tokens=True,
             max_length=self.max_len,
-            padding=False, 
-            truncation='longest_first', 
-            return_tensors=None 
+            padding=False,
+            truncation="longest_first",
+            return_tensors=None,
         )
 
         weight = 1.0
@@ -147,48 +173,54 @@ class CodeDataset(Dataset):
             weight = self.lang_weights.get(language, 1.0)
 
         return {
-            'input_ids': torch.tensor(encoding['input_ids'], dtype=torch.long),
-            'attention_mask': torch.tensor(encoding['attention_mask'], dtype=torch.long),
-            'labels': torch.tensor(label, dtype=torch.float),
-            'sample_weight': torch.tensor(weight, dtype=torch.float)
+            "input_ids": torch.tensor(encoding["input_ids"], dtype=torch.long),
+            "attention_mask": torch.tensor(encoding["attention_mask"], dtype=torch.long),
+            "labels": torch.tensor(label, dtype=torch.float),
+            "sample_weight": torch.tensor(weight, dtype=torch.float),
         }
 
+
 def dynamic_collate_fn(batch):
-    input_ids = [item['input_ids'] for item in batch]
-    attention_mask = [item['attention_mask'] for item in batch]
-    labels = torch.stack([item['labels'] for item in batch])
-    weights = torch.stack([item['sample_weight'] for item in batch])
+    input_ids = [item["input_ids"] for item in batch]
+    attention_mask = [item["attention_mask"] for item in batch]
+    labels = torch.stack([item["labels"] for item in batch])
+    weights = torch.stack([item["sample_weight"] for item in batch])
 
     input_ids_padded = torch.nn.utils.rnn.pad_sequence(input_ids, batch_first=True, padding_value=1)
-    attention_mask_padded = torch.nn.utils.rnn.pad_sequence(attention_mask, batch_first=True, padding_value=0)
+    attention_mask_padded = torch.nn.utils.rnn.pad_sequence(
+        attention_mask, batch_first=True, padding_value=0
+    )
 
     return {
-        'input_ids': input_ids_padded,
-        'attention_mask': attention_mask_padded,
-        'labels': labels,
-        'sample_weight': weights
+        "input_ids": input_ids_padded,
+        "attention_mask": attention_mask_padded,
+        "labels": labels,
+        "sample_weight": weights,
     }
+
 
 class UniXcoderClassifier(nn.Module):
     def __init__(self, base_model):
         super(UniXcoderClassifier, self).__init__()
         self.bert = base_model
-        self.drop = nn.Dropout(p=0.1) 
-        hidden_size = self.bert.config.hidden_size 
+        self.drop = nn.Dropout(p=0.1)
+        hidden_size = self.bert.config.hidden_size
         self.out = nn.Linear(hidden_size, 1)
 
     def forward(self, input_ids, attention_mask):
         outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
-        pooled_output = outputs.last_hidden_state[:, 0, :]      
+        pooled_output = outputs.last_hidden_state[:, 0, :]
         output = self.drop(pooled_output)
         return self.out(output)
 
+
 def compute_language_weights(raw_data):
-    langs = [item['language'] for item in raw_data]
+    langs = [item["language"] for item in raw_data]
     count = Counter(langs)
     total = len(langs)
     weights = {l: total / (len(count) * freq) for l, freq in count.items()}
     return weights
+
 
 def train_epoch(model, data_loader, loss_fn, optimizer, scaler, device, n_examples):
     model = model.train()
@@ -206,7 +238,7 @@ def train_epoch(model, data_loader, loss_fn, optimizer, scaler, device, n_exampl
             loss = (loss_fn(outputs, targets) * weights).mean() / ACCUMULATION_STEPS
 
         scaler.scale(loss).backward()
-        
+
         if (i + 1) % ACCUMULATION_STEPS == 0:
             scaler.unscale_(optimizer)
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
@@ -218,25 +250,27 @@ def train_epoch(model, data_loader, loss_fn, optimizer, scaler, device, n_exampl
 
     return np.mean(losses) if losses else 0
 
+
 def eval_model(model, data_loader, loss_fn, device):
     model = model.eval()
     losses, preds, targets = [], [], []
-    
+
     with torch.no_grad():
         for d in tqdm(data_loader, desc="Eval", leave=False):
             input_ids = d["input_ids"].to(device)
             attention_mask = d["attention_mask"].to(device)
             y = d["labels"].to(device)
-            
+
             with autocast():
                 out = model(input_ids, attention_mask).view(-1)
                 loss = loss_fn(out, y).mean()
-                
+
             losses.append(loss.item())
             preds.extend((torch.sigmoid(out) > 0.5).float().cpu().numpy())
             targets.extend(y.cpu().numpy())
-            
-    return np.mean(losses), f1_score(targets, preds, average='binary')
+
+    return np.mean(losses), f1_score(targets, preds, average="binary")
+
 
 def get_predictions(model, data_loader, device):
     model = model.eval()
@@ -254,58 +288,68 @@ def get_predictions(model, data_loader, device):
             real_values.extend(targets.cpu())
     return torch.stack(predictions), torch.stack(real_values)
 
+
 def save_training_history(history, save_dir):
     """Plots and saves loss and F1 curves."""
     # Loss Plot
     plt.figure(figsize=(10, 5))
-    plt.plot(history['train_loss'], label='Training Loss')
-    plt.plot(history['val_loss'], label='Validation Loss')
-    plt.xlabel('Epochs')
-    plt.ylabel('Loss')
-    plt.title('Training and Validation Loss')
+    plt.plot(history["train_loss"], label="Training Loss")
+    plt.plot(history["val_loss"], label="Validation Loss")
+    plt.xlabel("Epochs")
+    plt.ylabel("Loss")
+    plt.title("Training and Validation Loss")
     plt.legend()
     plt.grid(True)
-    plt.savefig(os.path.join(save_dir, 'loss_history.png'))
+    plt.savefig(os.path.join(save_dir, "loss_history.png"))
     plt.close()
 
     # F1 Plot
     plt.figure(figsize=(10, 5))
-    plt.plot(history['val_f1'], label='Validation F1', color='orange')
-    plt.xlabel('Epochs')
-    plt.ylabel('F1 Score')
-    plt.title('Validation F1 Score Over Epochs')
+    plt.plot(history["val_f1"], label="Validation F1", color="orange")
+    plt.xlabel("Epochs")
+    plt.ylabel("F1 Score")
+    plt.title("Validation F1 Score Over Epochs")
     plt.legend()
     plt.grid(True)
-    plt.savefig(os.path.join(save_dir, 'f1_history.png'))
+    plt.savefig(os.path.join(save_dir, "f1_history.png"))
     plt.close()
+
 
 def save_confusion_matrix_plot(y_true, y_pred, class_names, save_dir):
     """Plots and saves confusion matrix."""
     cm = confusion_matrix(y_true, y_pred)
     plt.figure(figsize=(8, 6))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
-                xticklabels=class_names, yticklabels=class_names)
-    plt.xlabel('Predicted Label')
-    plt.ylabel('True Label')
-    plt.title('Confusion Matrix')
-    plt.savefig(os.path.join(save_dir, 'confusion_matrix.png'))
+    sns.heatmap(
+        cm, annot=True, fmt="d", cmap="Blues", xticklabels=class_names, yticklabels=class_names
+    )
+    plt.xlabel("Predicted Label")
+    plt.ylabel("True Label")
+    plt.title("Confusion Matrix")
+    plt.savefig(os.path.join(save_dir, "confusion_matrix.png"))
     plt.close()
+
 
 def main():
     set_seed(42)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
-    
+
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
     SUBSAMPLE = True
-    train_raw = RawCodeDataset('train', subsample=SUBSAMPLE, sample_size=5000)
-    val_raw = RawCodeDataset('validation', subsample=SUBSAMPLE, sample_size=2000)
-    test_raw = RawCodeDataset('test', subsample=False)
+    train_raw = RawCodeDataset("train", subsample=SUBSAMPLE, sample_size=5000)
+    val_raw = RawCodeDataset("validation", subsample=SUBSAMPLE, sample_size=2000)
+    test_raw = RawCodeDataset("test", subsample=False)
 
-    train_data = [{'code': x['code'], 'label': x['label'], 'language': x['language']} for x in train_raw]
-    val_data = [{'code': x['code'], 'label': x['label'], 'language': x['language']} for x in val_raw]
-    test_data = [{'code': x['code'], 'label': x['label'], 'language': x['language']} for x in test_raw]
+    train_data = [
+        {"code": x["code"], "label": x["label"], "language": x["language"]} for x in train_raw
+    ]
+    val_data = [
+        {"code": x["code"], "label": x["label"], "language": x["language"]} for x in val_raw
+    ]
+    test_data = [
+        {"code": x["code"], "label": x["label"], "language": x["language"]} for x in test_raw
+    ]
 
     lang_weights = compute_language_weights(train_data)
 
@@ -313,7 +357,9 @@ def main():
     val_set = CodeDataset(val_data, tokenizer, MAX_LEN)
     test_set = CodeDataset(test_data, tokenizer, MAX_LEN)
 
-    train_loader = DataLoader(train_set, BATCH_SIZE, shuffle=True, collate_fn=dynamic_collate_fn, num_workers=2)
+    train_loader = DataLoader(
+        train_set, BATCH_SIZE, shuffle=True, collate_fn=dynamic_collate_fn, num_workers=2
+    )
     val_loader = DataLoader(val_set, BATCH_SIZE, collate_fn=dynamic_collate_fn, num_workers=2)
     test_loader = DataLoader(test_set, BATCH_SIZE, collate_fn=dynamic_collate_fn, num_workers=2)
 
@@ -324,26 +370,28 @@ def main():
     print(f"Training all {sum(p.numel() for p in model.parameters())} parameters.")
 
     optimizer = AdamW(model.parameters(), lr=LEARNING_RATE)
-    loss_fn = nn.BCEWithLogitsLoss(reduction='none').to(device)
+    loss_fn = nn.BCEWithLogitsLoss(reduction="none").to(device)
     scaler = GradScaler()
 
     best_f1 = 0
     patience_cnt = 0
-    
-    history = {'train_loss': [], 'val_loss': [], 'val_f1': []}
+
+    history = {"train_loss": [], "val_loss": [], "val_f1": []}
 
     print("Starting Training...")
     for epoch in range(EPOCHS):
-        print(f"Epoch {epoch+1}/{EPOCHS}")
-        train_loss = train_epoch(model, train_loader, loss_fn, optimizer, scaler, device, len(train_set))
+        print(f"Epoch {epoch + 1}/{EPOCHS}")
+        train_loss = train_epoch(
+            model, train_loader, loss_fn, optimizer, scaler, device, len(train_set)
+        )
         val_loss, val_f1 = eval_model(model, val_loader, loss_fn, device)
-        
-        history['train_loss'].append(train_loss)
-        history['val_loss'].append(val_loss)
-        history['val_f1'].append(val_f1)
+
+        history["train_loss"].append(train_loss)
+        history["val_loss"].append(val_loss)
+        history["val_f1"].append(val_f1)
 
         print(f"Train Loss: {train_loss:.4f} | Val Loss: {val_loss:.4f} | Val F1: {val_f1:.4f}")
-        
+
         if val_f1 > best_f1:
             best_f1 = val_f1
             torch.save(model.state_dict(), MODEL_SAVE_PATH)
@@ -361,50 +409,47 @@ def main():
     print("\nEvaluating on Test Set...")
     model.load_state_dict(torch.load(MODEL_SAVE_PATH))
     y_pred, y_test = get_predictions(model, test_loader, device)
-    
+
     y_pred_np = y_pred.numpy()
     y_test_np = y_test.numpy()
 
     save_confusion_matrix_plot(y_test_np, y_pred_np, CLASS_NAMES, OUTPUT_DIR)
-    
+
     print("\nOverall Classification Report:")
     print(classification_report(y_test_np, y_pred_np, target_names=CLASS_NAMES))
 
     print("\nCalculating Per-Language Metrics...")
-    
-    test_languages = [x['language'] for x in test_data]
-    
-    df_results = pd.DataFrame({
-        'true': y_test_np,
-        'pred': y_pred_np,
-        'language': test_languages
-    })
-    
-    language_metrics = {}
-    
-    for lang in df_results['language'].unique():
-        subset = df_results[df_results['language'] == lang]
 
-        acc = accuracy_score(subset['true'], subset['pred'])
+    test_languages = [x["language"] for x in test_data]
+
+    df_results = pd.DataFrame({"true": y_test_np, "pred": y_pred_np, "language": test_languages})
+
+    language_metrics = {}
+
+    for lang in df_results["language"].unique():
+        subset = df_results[df_results["language"] == lang]
+
+        acc = accuracy_score(subset["true"], subset["pred"])
         prec, rec, f1, _ = precision_recall_fscore_support(
-            subset['true'], subset['pred'], average='binary', zero_division=0
+            subset["true"], subset["pred"], average="binary", zero_division=0
         )
-        
+
         language_metrics[lang] = {
-            'accuracy': float(acc),
-            'precision': float(prec),
-            'recall': float(rec),
-            'f1': float(f1),
-            'count': int(len(subset))
+            "accuracy": float(acc),
+            "precision": float(prec),
+            "recall": float(rec),
+            "f1": float(f1),
+            "count": int(len(subset)),
         }
-        
+
         print(f"[{lang}] F1: {f1:.4f} | Acc: {acc:.4f} | Count: {len(subset)}")
 
-    with open(LANGUAGE_METRICS_PATH, 'w') as f:
+    with open(LANGUAGE_METRICS_PATH, "w") as f:
         json.dump(language_metrics, f, indent=4)
-    
+
     print(f"\nLanguage metrics saved to: {LANGUAGE_METRICS_PATH}")
     print("Pipeline Finished.")
+
 
 if __name__ == "__main__":
     main()
