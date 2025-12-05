@@ -12,6 +12,10 @@ ipykernel
 # machine learning
 scikit-learn
 
+# formatting
+black
+black[jupyter]
+
 # huggingface libraries
 huggingface_hub
 hf_xet
