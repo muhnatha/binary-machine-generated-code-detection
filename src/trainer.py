@@ -166,7 +166,7 @@ class UniXcoderClassifier(nn.Module):
         outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
         pooled_output = outputs.last_hidden_state[:, 0, :]
         #normalized_output = self.norm(pooled_output)      
-        output = self.drop(normalized_output)
+        output = self.drop(pooled_output)
         return self.out(output)
 
 def compute_language_weights(raw_data):
