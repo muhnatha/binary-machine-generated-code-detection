@@ -134,7 +134,7 @@ class CodeDataset(Dataset):
 
         encoding = self.tokenizer(
             code_text,
-            ast_text,
+            #ast_text,
             add_special_tokens=True,
             max_length=self.max_len,
             padding=False, 
