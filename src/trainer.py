@@ -17,13 +17,13 @@ from tqdm.auto import tqdm
 from torch.cuda.amp import autocast, GradScaler
 from collections import Counter 
 
-# --- Import your RawCodeDataset class ---
+
 try:
     from src.dataset import RawCodeDataset
 except ImportError:
     from dataset import RawCodeDataset
 
-# --- AST Parser Imports ---
+
 try:
     from tree_sitter import Language, Parser
     import tree_sitter_languages
@@ -32,26 +32,21 @@ except ImportError:
     print("⚠️ WARNING: tree-sitter not installed.")
     TREE_SITTER_AVAILABLE = False
 
-# --- Configuration ---
 OUTPUT_DIR = "output"
 MODEL_SAVE_PATH = os.path.join(OUTPUT_DIR, "model.pth")
 METRICS_SAVE_PATH = os.path.join(OUTPUT_DIR, "metrics.json")
 MODEL_NAME = "microsoft/unixcoder-base"
 
-# --- HIGH PERFORMANCE SETTINGS (For Colab) ---
-MAX_LEN = 512             # Full context
-BATCH_SIZE = 8            # Higher batch size for better gradients
-ACCUMULATION_STEPS = 2    # Less accumulation needed with higher batch size
-EPOCHS = 5                # Train longer
+MAX_LEN = 512             
+BATCH_SIZE = 8            
+ACCUMULATION_STEPS = 2   
+EPOCHS = 5               
 PATIENCE = 3              
-LEARNING_RATE = 2e-5      # Standard fine-tuning rate
+LEARNING_RATE = 2e-5      
 CLASS_NAMES = ['Human-Written', 'Machine-Generated']
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# ---------------------------------------------------------
-# 2. AST PARSER UTILITY
-# ---------------------------------------------------------
 class ASTParser:
     def __init__(self):
         self.parsers = {}
@@ -95,9 +90,6 @@ class ASTParser:
             return " ".join(tokens)
         except Exception: return ""
 
-# ---------------------------------------------------------
-# 3. DATASET CLASS
-# ---------------------------------------------------------
 def clean_code_strict(code):
     if pd.isna(code) or code == '': return ''
     code = str(code)
@@ -122,20 +114,16 @@ class CodeDataset(Dataset):
         label = item['label']
         language = item['language']
 
-        # Generate AST
         ast_text = self.ast_parser.parse_to_flattened_ast(code_text, language)
 
-        # Tokenize (Allowing tokenizer to manage split naturally via truncation)
-        # We construct inputs as pair: (text, text_pair) -> (code, ast)
-        # BERT-style tokenizers handle the [SEP] automatically this way
         encoding = self.tokenizer(
             code_text,
             ast_text,
             add_special_tokens=True,
             max_length=self.max_len,
-            padding=False, # Dynamic padding in collate
-            truncation='only_first', # Prioritize AST if too long, or 'longest_first'
-            return_tensors=None # Return lists
+            padding=False, 
+            truncation='only_first', 
+            return_tensors=None 
         )
 
         weight = 1.0
@@ -165,14 +153,10 @@ def dynamic_collate_fn(batch):
         'sample_weight': weights
     }
 
-# ---------------------------------------------------------
-# 4. MODEL
-# ---------------------------------------------------------
 class UniXcoderClassifier(nn.Module):
     def __init__(self, base_model):
         super(UniXcoderClassifier, self).__init__()
         self.bert = base_model
-        # Dropout helps prevent overfitting when training all layers
         self.drop = nn.Dropout(p=0.1) 
         hidden_size = self.bert.config.hidden_size 
         self.out = nn.Linear(hidden_size, 1)
@@ -190,9 +174,6 @@ def compute_language_weights(raw_data):
     weights = {l: total / (len(count) * freq) for l, freq in count.items()}
     return weights
 
-# ---------------------------------------------------------
-# 5. TRAINING LOOP
-# ---------------------------------------------------------
 def train_epoch(model, data_loader, loss_fn, optimizer, scaler, device, n_examples):
     model = model.train()
     losses = []
@@ -257,17 +238,12 @@ def get_predictions(model, data_loader, device):
             real_values.extend(targets.cpu())
     return torch.stack(predictions), torch.stack(real_values)
 
-# ---------------------------------------------------------
-# 6. MAIN
-# ---------------------------------------------------------
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
     
-    # 1. Load Data
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-    
-    # Full dataset load (Subsample=False)
+
     print("Loading Full Datasets...")
     train_raw = RawCodeDataset('train', subsample=False)
     val_raw = RawCodeDataset('validation', subsample=False)
@@ -279,7 +255,6 @@ def main():
 
     lang_weights = compute_language_weights(train_data)
 
-    # 2. Datasets
     train_set = CodeDataset(train_data, tokenizer, MAX_LEN, lang_weights)
     val_set = CodeDataset(val_data, tokenizer, MAX_LEN)
     test_set = CodeDataset(test_data, tokenizer, MAX_LEN)
@@ -288,12 +263,10 @@ def main():
     val_loader = DataLoader(val_set, BATCH_SIZE, collate_fn=dynamic_collate_fn, num_workers=2)
     test_loader = DataLoader(test_set, BATCH_SIZE, collate_fn=dynamic_collate_fn, num_workers=2)
 
-    # 3. Model
     print(f"Initializing {MODEL_NAME}...")
     base_model = AutoModel.from_pretrained(MODEL_NAME)
     model = UniXcoderClassifier(base_model).to(device)
-    
-    # NOTE: NO FREEZING. We train all weights for maximum accuracy.
+
     print(f"Training all {sum(p.numel() for p in model.parameters())} parameters.")
 
     optimizer = AdamW(model.parameters(), lr=LEARNING_RATE)

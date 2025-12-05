@@ -1,0 +1,1121 @@
+// Python AST
+digraph {
+	rankdir=TB
+	0 [label=module fillcolor=white shape=box style=filled]
+	1 [label=function_definition fillcolor=white shape=box style=filled]
+	0 -> 1
+	2 [label="def
+'def'" fillcolor=white shape=ellipse style=filled]
+	1 -> 2
+	3 [label="identifier
+'solve'" fillcolor=white shape=ellipse style=filled]
+	1 -> 3
+	4 [label=parameters fillcolor=white shape=box style=filled]
+	1 -> 4
+	5 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	4 -> 5
+	6 [label="identifier
+'t'" fillcolor=white shape=ellipse style=filled]
+	4 -> 6
+	7 [label=",
+','" fillcolor=white shape=ellipse style=filled]
+	4 -> 7
+	8 [label="identifier
+'test_cases'" fillcolor=white shape=ellipse style=filled]
+	4 -> 8
+	9 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	4 -> 9
+	10 [label=":
+':'" fillcolor=white shape=ellipse style=filled]
+	1 -> 10
+	11 [label=block fillcolor=white shape=box style=filled]
+	1 -> 11
+	12 [label=expression_statement fillcolor=white shape=box style=filled]
+	11 -> 12
+	13 [label=assignment fillcolor=white shape=box style=filled]
+	12 -> 13
+	14 [label="identifier
+'results'" fillcolor=white shape=ellipse style=filled]
+	13 -> 14
+	15 [label="=
+'='" fillcolor=white shape=ellipse style=filled]
+	13 -> 15
+	16 [label=list fillcolor=white shape=box style=filled]
+	13 -> 16
+	17 [label="[
+'['" fillcolor=white shape=ellipse style=filled]
+	16 -> 17
+	18 [label="]
+']'" fillcolor=white shape=ellipse style=filled]
+	16 -> 18
+	19 [label=for_statement fillcolor=white shape=box style=filled]
+	11 -> 19
+	20 [label="for
+'for'" fillcolor=white shape=ellipse style=filled]
+	19 -> 20
+	21 [label=pattern_list fillcolor=white shape=box style=filled]
+	19 -> 21
+	22 [label="identifier
+'n'" fillcolor=white shape=ellipse style=filled]
+	21 -> 22
+	23 [label=",
+','" fillcolor=white shape=ellipse style=filled]
+	21 -> 23
+	24 [label="identifier
+'daughters_lists'" fillcolor=white shape=ellipse style=filled]
+	21 -> 24
+	25 [label="in
+'in'" fillcolor=white shape=ellipse style=filled]
+	19 -> 25
+	26 [label="identifier
+'test_cases'" fillcolor=white shape=ellipse style=filled]
+	19 -> 26
+	27 [label=":
+':'" fillcolor=white shape=ellipse style=filled]
+	19 -> 27
+	28 [label=block fillcolor=white shape=box style=filled]
+	19 -> 28
+	29 [label=expression_statement fillcolor=white shape=box style=filled]
+	28 -> 29
+	30 [label=assignment fillcolor=white shape=box style=filled]
+	29 -> 30
+	31 [label="identifier
+'marriages'" fillcolor=white shape=ellipse style=filled]
+	30 -> 31
+	32 [label="=
+'='" fillcolor=white shape=ellipse style=filled]
+	30 -> 32
+	33 [label=binary_operator fillcolor=white shape=box style=filled]
+	30 -> 33
+	34 [label=list fillcolor=white shape=box style=filled]
+	33 -> 34
+	35 [label="[
+'['" fillcolor=white shape=ellipse style=filled]
+	34 -> 35
+	36 [label="integer
+'0'" fillcolor=white shape=ellipse style=filled]
+	34 -> 36
+	37 [label="]
+']'" fillcolor=white shape=ellipse style=filled]
+	34 -> 37
+	38 [label="*
+'*'" fillcolor=white shape=ellipse style=filled]
+	33 -> 38
+	39 [label="identifier
+'n'" fillcolor=white shape=ellipse style=filled]
+	33 -> 39
+	40 [label=expression_statement fillcolor=white shape=box style=filled]
+	28 -> 40
+	41 [label=assignment fillcolor=white shape=box style=filled]
+	40 -> 41
+	42 [label="identifier
+'free_princes'" fillcolor=white shape=ellipse style=filled]
+	41 -> 42
+	43 [label="=
+'='" fillcolor=white shape=ellipse style=filled]
+	41 -> 43
+	44 [label=call fillcolor=white shape=box style=filled]
+	41 -> 44
+	45 [label="identifier
+'set'" fillcolor=white shape=ellipse style=filled]
+	44 -> 45
+	46 [label=argument_list fillcolor=white shape=box style=filled]
+	44 -> 46
+	47 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	46 -> 47
+	48 [label=call fillcolor=white shape=box style=filled]
+	46 -> 48
+	49 [label="identifier
+'range'" fillcolor=white shape=ellipse style=filled]
+	48 -> 49
+	50 [label=argument_list fillcolor=white shape=box style=filled]
+	48 -> 50
+	51 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	50 -> 51
+	52 [label="integer
+'1'" fillcolor=white shape=ellipse style=filled]
+	50 -> 52
+	53 [label=",
+','" fillcolor=white shape=ellipse style=filled]
+	50 -> 53
+	54 [label=binary_operator fillcolor=white shape=box style=filled]
+	50 -> 54
+	55 [label="identifier
+'n'" fillcolor=white shape=ellipse style=filled]
+	54 -> 55
+	56 [label="+
+'+'" fillcolor=white shape=ellipse style=filled]
+	54 -> 56
+	57 [label="integer
+'1'" fillcolor=white shape=ellipse style=filled]
+	54 -> 57
+	58 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	50 -> 58
+	59 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	46 -> 59
+	60 [label="comment
+'# First pass: try to...'" fillcolor=white shape=ellipse style=filled]
+	28 -> 60
+	61 [label=for_statement fillcolor=white shape=box style=filled]
+	28 -> 61
+	62 [label="for
+'for'" fillcolor=white shape=ellipse style=filled]
+	61 -> 62
+	63 [label=pattern_list fillcolor=white shape=box style=filled]
+	61 -> 63
+	64 [label="identifier
+'i'" fillcolor=white shape=ellipse style=filled]
+	63 -> 64
+	65 [label=",
+','" fillcolor=white shape=ellipse style=filled]
+	63 -> 65
+	66 [label="identifier
+'daughters_list'" fillcolor=white shape=ellipse style=filled]
+	63 -> 66
+	67 [label="in
+'in'" fillcolor=white shape=ellipse style=filled]
+	61 -> 67
+	68 [label=call fillcolor=white shape=box style=filled]
+	61 -> 68
+	69 [label="identifier
+'enumerate'" fillcolor=white shape=ellipse style=filled]
+	68 -> 69
+	70 [label=argument_list fillcolor=white shape=box style=filled]
+	68 -> 70
+	71 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	70 -> 71
+	72 [label="identifier
+'daughters_lists'" fillcolor=white shape=ellipse style=filled]
+	70 -> 72
+	73 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	70 -> 73
+	74 [label=":
+':'" fillcolor=white shape=ellipse style=filled]
+	61 -> 74
+	75 [label=block fillcolor=white shape=box style=filled]
+	61 -> 75
+	76 [label=for_statement fillcolor=white shape=box style=filled]
+	75 -> 76
+	77 [label="for
+'for'" fillcolor=white shape=ellipse style=filled]
+	76 -> 77
+	78 [label="identifier
+'prince'" fillcolor=white shape=ellipse style=filled]
+	76 -> 78
+	79 [label="in
+'in'" fillcolor=white shape=ellipse style=filled]
+	76 -> 79
+	80 [label="identifier
+'daughters_list'" fillcolor=white shape=ellipse style=filled]
+	76 -> 80
+	81 [label=":
+':'" fillcolor=white shape=ellipse style=filled]
+	76 -> 81
+	82 [label=block fillcolor=white shape=box style=filled]
+	76 -> 82
+	83 [label=if_statement fillcolor=white shape=box style=filled]
+	82 -> 83
+	84 [label="if
+'if'" fillcolor=white shape=ellipse style=filled]
+	83 -> 84
+	85 [label=comparison_operator fillcolor=white shape=box style=filled]
+	83 -> 85
+	86 [label="identifier
+'prince'" fillcolor=white shape=ellipse style=filled]
+	85 -> 86
+	87 [label="in
+'in'" fillcolor=white shape=ellipse style=filled]
+	85 -> 87
+	88 [label="identifier
+'free_princes'" fillcolor=white shape=ellipse style=filled]
+	85 -> 88
+	89 [label=":
+':'" fillcolor=white shape=ellipse style=filled]
+	83 -> 89
+	90 [label=block fillcolor=white shape=box style=filled]
+	83 -> 90
+	91 [label=expression_statement fillcolor=white shape=box style=filled]
+	90 -> 91
+	92 [label=assignment fillcolor=white shape=box style=filled]
+	91 -> 92
+	93 [label=subscript fillcolor=white shape=box style=filled]
+	92 -> 93
+	94 [label="identifier
+'marriages'" fillcolor=white shape=ellipse style=filled]
+	93 -> 94
+	95 [label="[
+'['" fillcolor=white shape=ellipse style=filled]
+	93 -> 95
+	96 [label="identifier
+'i'" fillcolor=white shape=ellipse style=filled]
+	93 -> 96
+	97 [label="]
+']'" fillcolor=white shape=ellipse style=filled]
+	93 -> 97
+	98 [label="=
+'='" fillcolor=white shape=ellipse style=filled]
+	92 -> 98
+	99 [label="integer
+'1'" fillcolor=white shape=ellipse style=filled]
+	92 -> 99
+	100 [label=expression_statement fillcolor=white shape=box style=filled]
+	90 -> 100
+	101 [label=call fillcolor=white shape=box style=filled]
+	100 -> 101
+	102 [label=attribute fillcolor=white shape=box style=filled]
+	101 -> 102
+	103 [label="identifier
+'free_princes'" fillcolor=white shape=ellipse style=filled]
+	102 -> 103
+	104 [label=".
+'.'" fillcolor=white shape=ellipse style=filled]
+	102 -> 104
+	105 [label="identifier
+'remove'" fillcolor=white shape=ellipse style=filled]
+	102 -> 105
+	106 [label=argument_list fillcolor=white shape=box style=filled]
+	101 -> 106
+	107 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	106 -> 107
+	108 [label="identifier
+'prince'" fillcolor=white shape=ellipse style=filled]
+	106 -> 108
+	109 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	106 -> 109
+	110 [label=break_statement fillcolor=white shape=box style=filled]
+	90 -> 110
+	111 [label="break
+'break'" fillcolor=white shape=ellipse style=filled]
+	110 -> 111
+	112 [label="comment
+'# Check if marriages...'" fillcolor=white shape=ellipse style=filled]
+	28 -> 112
+	113 [label=expression_statement fillcolor=white shape=box style=filled]
+	28 -> 113
+	114 [label=assignment fillcolor=white shape=box style=filled]
+	113 -> 114
+	115 [label="identifier
+'can_be_improved'" fillcolor=white shape=ellipse style=filled]
+	114 -> 115
+	116 [label="=
+'='" fillcolor=white shape=ellipse style=filled]
+	114 -> 116
+	117 [label="false
+'False'" fillcolor=white shape=ellipse style=filled]
+	114 -> 117
+	118 [label=for_statement fillcolor=white shape=box style=filled]
+	28 -> 118
+	119 [label="for
+'for'" fillcolor=white shape=ellipse style=filled]
+	118 -> 119
+	120 [label="identifier
+'i'" fillcolor=white shape=ellipse style=filled]
+	118 -> 120
+	121 [label="in
+'in'" fillcolor=white shape=ellipse style=filled]
+	118 -> 121
+	122 [label=call fillcolor=white shape=box style=filled]
+	118 -> 122
+	123 [label="identifier
+'range'" fillcolor=white shape=ellipse style=filled]
+	122 -> 123
+	124 [label=argument_list fillcolor=white shape=box style=filled]
+	122 -> 124
+	125 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	124 -> 125
+	126 [label="identifier
+'n'" fillcolor=white shape=ellipse style=filled]
+	124 -> 126
+	127 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	124 -> 127
+	128 [label=":
+':'" fillcolor=white shape=ellipse style=filled]
+	118 -> 128
+	129 [label=block fillcolor=white shape=box style=filled]
+	118 -> 129
+	130 [label=if_statement fillcolor=white shape=box style=filled]
+	129 -> 130
+	131 [label="if
+'if'" fillcolor=white shape=ellipse style=filled]
+	130 -> 131
+	132 [label=not_operator fillcolor=white shape=box style=filled]
+	130 -> 132
+	133 [label="not
+'not'" fillcolor=white shape=ellipse style=filled]
+	132 -> 133
+	134 [label=subscript fillcolor=white shape=box style=filled]
+	132 -> 134
+	135 [label="identifier
+'marriages'" fillcolor=white shape=ellipse style=filled]
+	134 -> 135
+	136 [label="[
+'['" fillcolor=white shape=ellipse style=filled]
+	134 -> 136
+	137 [label="identifier
+'i'" fillcolor=white shape=ellipse style=filled]
+	134 -> 137
+	138 [label="]
+']'" fillcolor=white shape=ellipse style=filled]
+	134 -> 138
+	139 [label=":
+':'" fillcolor=white shape=ellipse style=filled]
+	130 -> 139
+	140 [label=block fillcolor=white shape=box style=filled]
+	130 -> 140
+	141 [label=for_statement fillcolor=white shape=box style=filled]
+	140 -> 141
+	142 [label="for
+'for'" fillcolor=white shape=ellipse style=filled]
+	141 -> 142
+	143 [label="identifier
+'prince'" fillcolor=white shape=ellipse style=filled]
+	141 -> 143
+	144 [label="in
+'in'" fillcolor=white shape=ellipse style=filled]
+	141 -> 144
+	145 [label="identifier
+'free_princes'" fillcolor=white shape=ellipse style=filled]
+	141 -> 145
+	146 [label=":
+':'" fillcolor=white shape=ellipse style=filled]
+	141 -> 146
+	147 [label=block fillcolor=white shape=box style=filled]
+	141 -> 147
+	148 [label=expression_statement fillcolor=white shape=box style=filled]
+	147 -> 148
+	149 [label=assignment fillcolor=white shape=box style=filled]
+	148 -> 149
+	150 [label="identifier
+'can_be_improved'" fillcolor=white shape=ellipse style=filled]
+	149 -> 150
+	151 [label="=
+'='" fillcolor=white shape=ellipse style=filled]
+	149 -> 151
+	152 [label="true
+'True'" fillcolor=white shape=ellipse style=filled]
+	149 -> 152
+	153 [label=expression_statement fillcolor=white shape=box style=filled]
+	147 -> 153
+	154 [label=call fillcolor=white shape=box style=filled]
+	153 -> 154
+	155 [label=attribute fillcolor=white shape=box style=filled]
+	154 -> 155
+	156 [label="identifier
+'results'" fillcolor=white shape=ellipse style=filled]
+	155 -> 156
+	157 [label=".
+'.'" fillcolor=white shape=ellipse style=filled]
+	155 -> 157
+	158 [label="identifier
+'append'" fillcolor=white shape=ellipse style=filled]
+	155 -> 158
+	159 [label=argument_list fillcolor=white shape=box style=filled]
+	154 -> 159
+	160 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	159 -> 160
+	161 [label=string fillcolor=white shape=box style=filled]
+	159 -> 161
+	162 [label="string_start
+'f\"'" fillcolor=white shape=ellipse style=filled]
+	161 -> 162
+	163 [label=string_content fillcolor=white shape=box style=filled]
+	161 -> 163
+	164 [label="escape_sequence
+'\\n'" fillcolor=white shape=ellipse style=filled]
+	163 -> 164
+	165 [label=interpolation fillcolor=white shape=box style=filled]
+	161 -> 165
+	166 [label="{
+'{'" fillcolor=white shape=ellipse style=filled]
+	165 -> 166
+	167 [label=binary_operator fillcolor=white shape=box style=filled]
+	165 -> 167
+	168 [label="identifier
+'i'" fillcolor=white shape=ellipse style=filled]
+	167 -> 168
+	169 [label="+
+'+'" fillcolor=white shape=ellipse style=filled]
+	167 -> 169
+	170 [label="integer
+'1'" fillcolor=white shape=ellipse style=filled]
+	167 -> 170
+	171 [label="}
+'}'" fillcolor=white shape=ellipse style=filled]
+	165 -> 171
+	172 [label="string_content
+' '" fillcolor=white shape=ellipse style=filled]
+	161 -> 172
+	173 [label=interpolation fillcolor=white shape=box style=filled]
+	161 -> 173
+	174 [label="{
+'{'" fillcolor=white shape=ellipse style=filled]
+	173 -> 174
+	175 [label="identifier
+'prince'" fillcolor=white shape=ellipse style=filled]
+	173 -> 175
+	176 [label="}
+'}'" fillcolor=white shape=ellipse style=filled]
+	173 -> 176
+	177 [label="string_end
+'\"'" fillcolor=white shape=ellipse style=filled]
+	161 -> 177
+	178 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	159 -> 178
+	179 [label=break_statement fillcolor=white shape=box style=filled]
+	147 -> 179
+	180 [label="break
+'break'" fillcolor=white shape=ellipse style=filled]
+	179 -> 180
+	181 [label=elif_clause fillcolor=white shape=box style=filled]
+	130 -> 181
+	182 [label="elif
+'elif'" fillcolor=white shape=ellipse style=filled]
+	181 -> 182
+	183 [label=boolean_operator fillcolor=white shape=box style=filled]
+	181 -> 183
+	184 [label="identifier
+'free_princes'" fillcolor=white shape=ellipse style=filled]
+	183 -> 184
+	185 [label="and
+'and'" fillcolor=white shape=ellipse style=filled]
+	183 -> 185
+	186 [label=call fillcolor=white shape=box style=filled]
+	183 -> 186
+	187 [label=attribute fillcolor=white shape=box style=filled]
+	186 -> 187
+	188 [label="identifier
+'free_princes'" fillcolor=white shape=ellipse style=filled]
+	187 -> 188
+	189 [label=".
+'.'" fillcolor=white shape=ellipse style=filled]
+	187 -> 189
+	190 [label="identifier
+'issubset'" fillcolor=white shape=ellipse style=filled]
+	187 -> 190
+	191 [label=argument_list fillcolor=white shape=box style=filled]
+	186 -> 191
+	192 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	191 -> 192
+	193 [label=call fillcolor=white shape=box style=filled]
+	191 -> 193
+	194 [label="identifier
+'set'" fillcolor=white shape=ellipse style=filled]
+	193 -> 194
+	195 [label=argument_list fillcolor=white shape=box style=filled]
+	193 -> 195
+	196 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	195 -> 196
+	197 [label=subscript fillcolor=white shape=box style=filled]
+	195 -> 197
+	198 [label="identifier
+'daughters_lists'" fillcolor=white shape=ellipse style=filled]
+	197 -> 198
+	199 [label="[
+'['" fillcolor=white shape=ellipse style=filled]
+	197 -> 199
+	200 [label="identifier
+'i'" fillcolor=white shape=ellipse style=filled]
+	197 -> 200
+	201 [label="]
+']'" fillcolor=white shape=ellipse style=filled]
+	197 -> 201
+	202 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	195 -> 202
+	203 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	191 -> 203
+	204 [label=":
+':'" fillcolor=white shape=ellipse style=filled]
+	181 -> 204
+	205 [label=block fillcolor=white shape=box style=filled]
+	181 -> 205
+	206 [label=expression_statement fillcolor=white shape=box style=filled]
+	205 -> 206
+	207 [label=assignment fillcolor=white shape=box style=filled]
+	206 -> 207
+	208 [label="identifier
+'can_be_improved'" fillcolor=white shape=ellipse style=filled]
+	207 -> 208
+	209 [label="=
+'='" fillcolor=white shape=ellipse style=filled]
+	207 -> 209
+	210 [label="true
+'True'" fillcolor=white shape=ellipse style=filled]
+	207 -> 210
+	211 [label=expression_statement fillcolor=white shape=box style=filled]
+	205 -> 211
+	212 [label=call fillcolor=white shape=box style=filled]
+	211 -> 212
+	213 [label=attribute fillcolor=white shape=box style=filled]
+	212 -> 213
+	214 [label="identifier
+'results'" fillcolor=white shape=ellipse style=filled]
+	213 -> 214
+	215 [label=".
+'.'" fillcolor=white shape=ellipse style=filled]
+	213 -> 215
+	216 [label="identifier
+'append'" fillcolor=white shape=ellipse style=filled]
+	213 -> 216
+	217 [label=argument_list fillcolor=white shape=box style=filled]
+	212 -> 217
+	218 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	217 -> 218
+	219 [label=string fillcolor=white shape=box style=filled]
+	217 -> 219
+	220 [label="string_start
+'f\"'" fillcolor=white shape=ellipse style=filled]
+	219 -> 220
+	221 [label=string_content fillcolor=white shape=box style=filled]
+	219 -> 221
+	222 [label="escape_sequence
+'\\n'" fillcolor=white shape=ellipse style=filled]
+	221 -> 222
+	223 [label=interpolation fillcolor=white shape=box style=filled]
+	219 -> 223
+	224 [label="{
+'{'" fillcolor=white shape=ellipse style=filled]
+	223 -> 224
+	225 [label=binary_operator fillcolor=white shape=box style=filled]
+	223 -> 225
+	226 [label="identifier
+'i'" fillcolor=white shape=ellipse style=filled]
+	225 -> 226
+	227 [label="+
+'+'" fillcolor=white shape=ellipse style=filled]
+	225 -> 227
+	228 [label="integer
+'1'" fillcolor=white shape=ellipse style=filled]
+	225 -> 228
+	229 [label="}
+'}'" fillcolor=white shape=ellipse style=filled]
+	223 -> 229
+	230 [label="string_content
+' '" fillcolor=white shape=ellipse style=filled]
+	219 -> 230
+	231 [label=interpolation fillcolor=white shape=box style=filled]
+	219 -> 231
+	232 [label="{
+'{'" fillcolor=white shape=ellipse style=filled]
+	231 -> 232
+	233 [label=call fillcolor=white shape=box style=filled]
+	231 -> 233
+	234 [label="identifier
+'min'" fillcolor=white shape=ellipse style=filled]
+	233 -> 234
+	235 [label=argument_list fillcolor=white shape=box style=filled]
+	233 -> 235
+	236 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	235 -> 236
+	237 [label="identifier
+'free_princes'" fillcolor=white shape=ellipse style=filled]
+	235 -> 237
+	238 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	235 -> 238
+	239 [label="}
+'}'" fillcolor=white shape=ellipse style=filled]
+	231 -> 239
+	240 [label="string_end
+'\"'" fillcolor=white shape=ellipse style=filled]
+	219 -> 240
+	241 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	217 -> 241
+	242 [label=break_statement fillcolor=white shape=box style=filled]
+	205 -> 242
+	243 [label="break
+'break'" fillcolor=white shape=ellipse style=filled]
+	242 -> 243
+	244 [label=if_statement fillcolor=white shape=box style=filled]
+	28 -> 244
+	245 [label="if
+'if'" fillcolor=white shape=ellipse style=filled]
+	244 -> 245
+	246 [label=not_operator fillcolor=white shape=box style=filled]
+	244 -> 246
+	247 [label="not
+'not'" fillcolor=white shape=ellipse style=filled]
+	246 -> 247
+	248 [label="identifier
+'can_be_improved'" fillcolor=white shape=ellipse style=filled]
+	246 -> 248
+	249 [label=":
+':'" fillcolor=white shape=ellipse style=filled]
+	244 -> 249
+	250 [label=block fillcolor=white shape=box style=filled]
+	244 -> 250
+	251 [label=expression_statement fillcolor=white shape=box style=filled]
+	250 -> 251
+	252 [label=call fillcolor=white shape=box style=filled]
+	251 -> 252
+	253 [label=attribute fillcolor=white shape=box style=filled]
+	252 -> 253
+	254 [label="identifier
+'results'" fillcolor=white shape=ellipse style=filled]
+	253 -> 254
+	255 [label=".
+'.'" fillcolor=white shape=ellipse style=filled]
+	253 -> 255
+	256 [label="identifier
+'append'" fillcolor=white shape=ellipse style=filled]
+	253 -> 256
+	257 [label=argument_list fillcolor=white shape=box style=filled]
+	252 -> 257
+	258 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	257 -> 258
+	259 [label=string fillcolor=white shape=box style=filled]
+	257 -> 259
+	260 [label="string_start
+'\"'" fillcolor=white shape=ellipse style=filled]
+	259 -> 260
+	261 [label="string_content
+'OPTIMAL'" fillcolor=white shape=ellipse style=filled]
+	259 -> 261
+	262 [label="string_end
+'\"'" fillcolor=white shape=ellipse style=filled]
+	259 -> 262
+	263 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	257 -> 263
+	264 [label=return_statement fillcolor=white shape=box style=filled]
+	11 -> 264
+	265 [label="return
+'return'" fillcolor=white shape=ellipse style=filled]
+	264 -> 265
+	266 [label="identifier
+'results'" fillcolor=white shape=ellipse style=filled]
+	264 -> 266
+	267 [label="comment
+'# Read input and pro...'" fillcolor=white shape=ellipse style=filled]
+	0 -> 267
+	268 [label=expression_statement fillcolor=white shape=box style=filled]
+	0 -> 268
+	269 [label=assignment fillcolor=white shape=box style=filled]
+	268 -> 269
+	270 [label="identifier
+'t'" fillcolor=white shape=ellipse style=filled]
+	269 -> 270
+	271 [label="=
+'='" fillcolor=white shape=ellipse style=filled]
+	269 -> 271
+	272 [label=call fillcolor=white shape=box style=filled]
+	269 -> 272
+	273 [label="identifier
+'int'" fillcolor=white shape=ellipse style=filled]
+	272 -> 273
+	274 [label=argument_list fillcolor=white shape=box style=filled]
+	272 -> 274
+	275 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	274 -> 275
+	276 [label=call fillcolor=white shape=box style=filled]
+	274 -> 276
+	277 [label="identifier
+'input'" fillcolor=white shape=ellipse style=filled]
+	276 -> 277
+	278 [label=argument_list fillcolor=white shape=box style=filled]
+	276 -> 278
+	279 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	278 -> 279
+	280 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	278 -> 280
+	281 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	274 -> 281
+	282 [label=expression_statement fillcolor=white shape=box style=filled]
+	0 -> 282
+	283 [label=assignment fillcolor=white shape=box style=filled]
+	282 -> 283
+	284 [label="identifier
+'test_cases'" fillcolor=white shape=ellipse style=filled]
+	283 -> 284
+	285 [label="=
+'='" fillcolor=white shape=ellipse style=filled]
+	283 -> 285
+	286 [label=list fillcolor=white shape=box style=filled]
+	283 -> 286
+	287 [label="[
+'['" fillcolor=white shape=ellipse style=filled]
+	286 -> 287
+	288 [label="]
+']'" fillcolor=white shape=ellipse style=filled]
+	286 -> 288
+	289 [label=for_statement fillcolor=white shape=box style=filled]
+	0 -> 289
+	290 [label="for
+'for'" fillcolor=white shape=ellipse style=filled]
+	289 -> 290
+	291 [label="identifier
+'_'" fillcolor=white shape=ellipse style=filled]
+	289 -> 291
+	292 [label="in
+'in'" fillcolor=white shape=ellipse style=filled]
+	289 -> 292
+	293 [label=call fillcolor=white shape=box style=filled]
+	289 -> 293
+	294 [label="identifier
+'range'" fillcolor=white shape=ellipse style=filled]
+	293 -> 294
+	295 [label=argument_list fillcolor=white shape=box style=filled]
+	293 -> 295
+	296 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	295 -> 296
+	297 [label="identifier
+'t'" fillcolor=white shape=ellipse style=filled]
+	295 -> 297
+	298 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	295 -> 298
+	299 [label=":
+':'" fillcolor=white shape=ellipse style=filled]
+	289 -> 299
+	300 [label=block fillcolor=white shape=box style=filled]
+	289 -> 300
+	301 [label=expression_statement fillcolor=white shape=box style=filled]
+	300 -> 301
+	302 [label=assignment fillcolor=white shape=box style=filled]
+	301 -> 302
+	303 [label="identifier
+'n'" fillcolor=white shape=ellipse style=filled]
+	302 -> 303
+	304 [label="=
+'='" fillcolor=white shape=ellipse style=filled]
+	302 -> 304
+	305 [label=call fillcolor=white shape=box style=filled]
+	302 -> 305
+	306 [label="identifier
+'int'" fillcolor=white shape=ellipse style=filled]
+	305 -> 306
+	307 [label=argument_list fillcolor=white shape=box style=filled]
+	305 -> 307
+	308 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	307 -> 308
+	309 [label=call fillcolor=white shape=box style=filled]
+	307 -> 309
+	310 [label="identifier
+'input'" fillcolor=white shape=ellipse style=filled]
+	309 -> 310
+	311 [label=argument_list fillcolor=white shape=box style=filled]
+	309 -> 311
+	312 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	311 -> 312
+	313 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	311 -> 313
+	314 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	307 -> 314
+	315 [label=expression_statement fillcolor=white shape=box style=filled]
+	300 -> 315
+	316 [label=assignment fillcolor=white shape=box style=filled]
+	315 -> 316
+	317 [label="identifier
+'daughters_lists'" fillcolor=white shape=ellipse style=filled]
+	316 -> 317
+	318 [label="=
+'='" fillcolor=white shape=ellipse style=filled]
+	316 -> 318
+	319 [label=list fillcolor=white shape=box style=filled]
+	316 -> 319
+	320 [label="[
+'['" fillcolor=white shape=ellipse style=filled]
+	319 -> 320
+	321 [label="]
+']'" fillcolor=white shape=ellipse style=filled]
+	319 -> 321
+	322 [label=for_statement fillcolor=white shape=box style=filled]
+	300 -> 322
+	323 [label="for
+'for'" fillcolor=white shape=ellipse style=filled]
+	322 -> 323
+	324 [label="identifier
+'_'" fillcolor=white shape=ellipse style=filled]
+	322 -> 324
+	325 [label="in
+'in'" fillcolor=white shape=ellipse style=filled]
+	322 -> 325
+	326 [label=call fillcolor=white shape=box style=filled]
+	322 -> 326
+	327 [label="identifier
+'range'" fillcolor=white shape=ellipse style=filled]
+	326 -> 327
+	328 [label=argument_list fillcolor=white shape=box style=filled]
+	326 -> 328
+	329 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	328 -> 329
+	330 [label="identifier
+'n'" fillcolor=white shape=ellipse style=filled]
+	328 -> 330
+	331 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	328 -> 331
+	332 [label=":
+':'" fillcolor=white shape=ellipse style=filled]
+	322 -> 332
+	333 [label=block fillcolor=white shape=box style=filled]
+	322 -> 333
+	334 [label=expression_statement fillcolor=white shape=box style=filled]
+	333 -> 334
+	335 [label=assignment fillcolor=white shape=box style=filled]
+	334 -> 335
+	336 [label="identifier
+'k'" fillcolor=white shape=ellipse style=filled]
+	335 -> 336
+	337 [label="=
+'='" fillcolor=white shape=ellipse style=filled]
+	335 -> 337
+	338 [label=call fillcolor=white shape=box style=filled]
+	335 -> 338
+	339 [label="identifier
+'int'" fillcolor=white shape=ellipse style=filled]
+	338 -> 339
+	340 [label=argument_list fillcolor=white shape=box style=filled]
+	338 -> 340
+	341 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	340 -> 341
+	342 [label=call fillcolor=white shape=box style=filled]
+	340 -> 342
+	343 [label="identifier
+'input'" fillcolor=white shape=ellipse style=filled]
+	342 -> 343
+	344 [label=argument_list fillcolor=white shape=box style=filled]
+	342 -> 344
+	345 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	344 -> 345
+	346 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	344 -> 346
+	347 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	340 -> 347
+	348 [label=expression_statement fillcolor=white shape=box style=filled]
+	333 -> 348
+	349 [label=call fillcolor=white shape=box style=filled]
+	348 -> 349
+	350 [label=attribute fillcolor=white shape=box style=filled]
+	349 -> 350
+	351 [label="identifier
+'daughters_lists'" fillcolor=white shape=ellipse style=filled]
+	350 -> 351
+	352 [label=".
+'.'" fillcolor=white shape=ellipse style=filled]
+	350 -> 352
+	353 [label="identifier
+'append'" fillcolor=white shape=ellipse style=filled]
+	350 -> 353
+	354 [label=argument_list fillcolor=white shape=box style=filled]
+	349 -> 354
+	355 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	354 -> 355
+	356 [label=list_comprehension fillcolor=white shape=box style=filled]
+	354 -> 356
+	357 [label="[
+'['" fillcolor=white shape=ellipse style=filled]
+	356 -> 357
+	358 [label=call fillcolor=white shape=box style=filled]
+	356 -> 358
+	359 [label="identifier
+'int'" fillcolor=white shape=ellipse style=filled]
+	358 -> 359
+	360 [label=argument_list fillcolor=white shape=box style=filled]
+	358 -> 360
+	361 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	360 -> 361
+	362 [label="identifier
+'x'" fillcolor=white shape=ellipse style=filled]
+	360 -> 362
+	363 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	360 -> 363
+	364 [label=for_in_clause fillcolor=white shape=box style=filled]
+	356 -> 364
+	365 [label="for
+'for'" fillcolor=white shape=ellipse style=filled]
+	364 -> 365
+	366 [label="identifier
+'x'" fillcolor=white shape=ellipse style=filled]
+	364 -> 366
+	367 [label="in
+'in'" fillcolor=white shape=ellipse style=filled]
+	364 -> 367
+	368 [label=call fillcolor=white shape=box style=filled]
+	364 -> 368
+	369 [label=attribute fillcolor=white shape=box style=filled]
+	368 -> 369
+	370 [label=call fillcolor=white shape=box style=filled]
+	369 -> 370
+	371 [label="identifier
+'input'" fillcolor=white shape=ellipse style=filled]
+	370 -> 371
+	372 [label=argument_list fillcolor=white shape=box style=filled]
+	370 -> 372
+	373 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	372 -> 373
+	374 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	372 -> 374
+	375 [label=".
+'.'" fillcolor=white shape=ellipse style=filled]
+	369 -> 375
+	376 [label="identifier
+'split'" fillcolor=white shape=ellipse style=filled]
+	369 -> 376
+	377 [label=argument_list fillcolor=white shape=box style=filled]
+	368 -> 377
+	378 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	377 -> 378
+	379 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	377 -> 379
+	380 [label="]
+']'" fillcolor=white shape=ellipse style=filled]
+	356 -> 380
+	381 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	354 -> 381
+	382 [label=expression_statement fillcolor=white shape=box style=filled]
+	300 -> 382
+	383 [label=call fillcolor=white shape=box style=filled]
+	382 -> 383
+	384 [label=attribute fillcolor=white shape=box style=filled]
+	383 -> 384
+	385 [label="identifier
+'test_cases'" fillcolor=white shape=ellipse style=filled]
+	384 -> 385
+	386 [label=".
+'.'" fillcolor=white shape=ellipse style=filled]
+	384 -> 386
+	387 [label="identifier
+'append'" fillcolor=white shape=ellipse style=filled]
+	384 -> 387
+	388 [label=argument_list fillcolor=white shape=box style=filled]
+	383 -> 388
+	389 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	388 -> 389
+	390 [label=tuple fillcolor=white shape=box style=filled]
+	388 -> 390
+	391 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	390 -> 391
+	392 [label="identifier
+'n'" fillcolor=white shape=ellipse style=filled]
+	390 -> 392
+	393 [label=",
+','" fillcolor=white shape=ellipse style=filled]
+	390 -> 393
+	394 [label="identifier
+'daughters_lists'" fillcolor=white shape=ellipse style=filled]
+	390 -> 394
+	395 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	390 -> 395
+	396 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	388 -> 396
+	397 [label="comment
+'# Solve and print re...'" fillcolor=white shape=ellipse style=filled]
+	0 -> 397
+	398 [label=expression_statement fillcolor=white shape=box style=filled]
+	0 -> 398
+	399 [label=assignment fillcolor=white shape=box style=filled]
+	398 -> 399
+	400 [label="identifier
+'results'" fillcolor=white shape=ellipse style=filled]
+	399 -> 400
+	401 [label="=
+'='" fillcolor=white shape=ellipse style=filled]
+	399 -> 401
+	402 [label=call fillcolor=white shape=box style=filled]
+	399 -> 402
+	403 [label="identifier
+'solve'" fillcolor=white shape=ellipse style=filled]
+	402 -> 403
+	404 [label=argument_list fillcolor=white shape=box style=filled]
+	402 -> 404
+	405 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	404 -> 405
+	406 [label="identifier
+'t'" fillcolor=white shape=ellipse style=filled]
+	404 -> 406
+	407 [label=",
+','" fillcolor=white shape=ellipse style=filled]
+	404 -> 407
+	408 [label="identifier
+'test_cases'" fillcolor=white shape=ellipse style=filled]
+	404 -> 408
+	409 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	404 -> 409
+	410 [label=for_statement fillcolor=white shape=box style=filled]
+	0 -> 410
+	411 [label="for
+'for'" fillcolor=white shape=ellipse style=filled]
+	410 -> 411
+	412 [label="identifier
+'result'" fillcolor=white shape=ellipse style=filled]
+	410 -> 412
+	413 [label="in
+'in'" fillcolor=white shape=ellipse style=filled]
+	410 -> 413
+	414 [label="identifier
+'results'" fillcolor=white shape=ellipse style=filled]
+	410 -> 414
+	415 [label=":
+':'" fillcolor=white shape=ellipse style=filled]
+	410 -> 415
+	416 [label=block fillcolor=white shape=box style=filled]
+	410 -> 416
+	417 [label=expression_statement fillcolor=white shape=box style=filled]
+	416 -> 417
+	418 [label=call fillcolor=white shape=box style=filled]
+	417 -> 418
+	419 [label="identifier
+'print'" fillcolor=white shape=ellipse style=filled]
+	418 -> 419
+	420 [label=argument_list fillcolor=white shape=box style=filled]
+	418 -> 420
+	421 [label="(
+'('" fillcolor=white shape=ellipse style=filled]
+	420 -> 421
+	422 [label="identifier
+'result'" fillcolor=white shape=ellipse style=filled]
+	420 -> 422
+	423 [label=")
+')'" fillcolor=white shape=ellipse style=filled]
+	420 -> 423
+}
