@@ -8,6 +8,7 @@ import torch.nn as nn
 import numpy as np
 import gc
 import re
+import random
 import pandas as pd
 from torch.utils.data import Dataset, DataLoader
 from transformers import AutoTokenizer, AutoModel, AutoConfig
@@ -47,6 +48,19 @@ CLASS_NAMES = ['Human-Written', 'Machine-Generated']
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+def set_seed(seed=42):
+    """Sets the seed for reproducibility across all libraries."""
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    print(f"Seed set to {seed}")
+    
 class ASTParser:
     def __init__(self):
         self.parsers = {}
@@ -120,6 +134,7 @@ class CodeDataset(Dataset):
             ast_text = ""
 
         encoding = self.tokenizer(
+            code_text,
             ast_text,
             add_special_tokens=True,
             max_length=self.max_len,
@@ -159,15 +174,13 @@ class UniXcoderClassifier(nn.Module):
     def __init__(self, base_model):
         super(UniXcoderClassifier, self).__init__()
         self.bert = base_model
-        #self.norm = nn.LayerNorm(self.bert.config.hidden_size)
         self.drop = nn.Dropout(p=0.1) 
         hidden_size = self.bert.config.hidden_size 
         self.out = nn.Linear(hidden_size, 1)
 
     def forward(self, input_ids, attention_mask):
         outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
-        pooled_output = outputs.last_hidden_state[:, 0, :]
-        #normalized_output = self.norm(pooled_output)      
+        pooled_output = outputs.last_hidden_state[:, 0, :]     
         output = self.drop(pooled_output)
         return self.out(output)
 
@@ -243,6 +256,7 @@ def get_predictions(model, data_loader, device):
     return torch.stack(predictions), torch.stack(real_values)
 
 def main():
+    set_seed(42)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
     
