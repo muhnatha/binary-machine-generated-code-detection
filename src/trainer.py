@@ -122,7 +122,7 @@ class CodeDataset(Dataset):
             add_special_tokens=True,
             max_length=self.max_len,
             padding=False, 
-            truncation='True', 
+            truncation='longest_first', 
             return_tensors=None 
         )
 
