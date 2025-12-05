@@ -157,6 +157,7 @@ class UniXcoderClassifier(nn.Module):
     def __init__(self, base_model):
         super(UniXcoderClassifier, self).__init__()
         self.bert = base_model
+        self.norm = nn.LayerNorm(self.bert.config.hidden_size)
         self.drop = nn.Dropout(p=0.1) 
         hidden_size = self.bert.config.hidden_size 
         self.out = nn.Linear(hidden_size, 1)
@@ -164,7 +165,8 @@ class UniXcoderClassifier(nn.Module):
     def forward(self, input_ids, attention_mask):
         outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
         pooled_output = outputs.last_hidden_state[:, 0, :]
-        output = self.drop(pooled_output)
+        normalized_output = self.norm(pooled_output)      
+        output = self.drop(normalized_output)
         return self.out(output)
 
 def compute_language_weights(raw_data):
