@@ -2,7 +2,8 @@
 A deep learning project to classify code as human-written or machine-generated, targeting SemEval-2026 Task 13 subtask A.
 
 ## Requirements
-1. Python version `3.10.x`
+1. Python `3.10.x`
+2. Editor compatible with Python and Jupyter Notebook (e.g., VSCode, PyCharm)
 
 ## How to Setup the Environment
 1. Clone repository
@@ -11,7 +12,7 @@ A deep learning project to classify code as human-written or machine-generated, 
    cd binary-machine-generated-code-detection
    ```
 2. Create and activate python virtual environment
-   ```
+   ```bash
    python -m venv .venv
 
    # bash
