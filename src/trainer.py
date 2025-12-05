@@ -45,7 +45,7 @@ BATCH_SIZE = 1
 ACCUMULATION_STEPS = 16   
 EPOCHS = 3           
 PATIENCE = 3              
-LEARNING_RATE = 1e-5      
+LEARNING_RATE = 5e-5      
 CLASS_NAMES = ['Human-Written', 'Machine-Generated']
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
