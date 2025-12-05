@@ -13,8 +13,7 @@ ipykernel
 scikit-learn
 
 # formatting
-black
-black[jupyter]
+ruff
 
 # huggingface libraries
 huggingface_hub
