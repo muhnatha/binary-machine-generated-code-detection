@@ -10,32 +10,33 @@ import gc
 import re
 import random
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 from torch.utils.data import Dataset, DataLoader
 from transformers import AutoTokenizer, AutoModel, AutoConfig
 from torch.optim import AdamW
-from sklearn.metrics import f1_score, classification_report
+from sklearn.metrics import f1_score, classification_report, confusion_matrix, accuracy_score, precision_recall_fscore_support
 from tqdm.auto import tqdm
 from torch.cuda.amp import autocast, GradScaler
 from collections import Counter 
-
 
 try:
     from src.dataset import RawCodeDataset
 except ImportError:
     from dataset import RawCodeDataset
 
-
 try:
     from tree_sitter import Language, Parser
     import tree_sitter_languages
     TREE_SITTER_AVAILABLE = True
 except ImportError:
-    print("⚠️ WARNING: tree-sitter not installed.")
+    print("WARNING: tree-sitter not installed.")
     TREE_SITTER_AVAILABLE = False
 
 OUTPUT_DIR = "output"
 MODEL_SAVE_PATH = os.path.join(OUTPUT_DIR, "model.pth")
 METRICS_SAVE_PATH = os.path.join(OUTPUT_DIR, "metrics.json")
+LANGUAGE_METRICS_PATH = os.path.join(OUTPUT_DIR, "language_metrics.json")
 MODEL_NAME = "microsoft/unixcoder-base"
 
 MAX_LEN = 512             
@@ -54,10 +55,8 @@ def set_seed(seed=42):
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
-    
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
-    
     os.environ['PYTHONHASHSEED'] = str(seed)
     print(f"Seed set to {seed}")
     
@@ -180,7 +179,7 @@ class UniXcoderClassifier(nn.Module):
 
     def forward(self, input_ids, attention_mask):
         outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
-        pooled_output = outputs.last_hidden_state[:, 0, :]     
+        pooled_output = outputs.last_hidden_state[:, 0, :]      
         output = self.drop(pooled_output)
         return self.out(output)
 
@@ -255,6 +254,43 @@ def get_predictions(model, data_loader, device):
             real_values.extend(targets.cpu())
     return torch.stack(predictions), torch.stack(real_values)
 
+def save_training_history(history, save_dir):
+    """Plots and saves loss and F1 curves."""
+    # Loss Plot
+    plt.figure(figsize=(10, 5))
+    plt.plot(history['train_loss'], label='Training Loss')
+    plt.plot(history['val_loss'], label='Validation Loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.title('Training and Validation Loss')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig(os.path.join(save_dir, 'loss_history.png'))
+    plt.close()
+
+    # F1 Plot
+    plt.figure(figsize=(10, 5))
+    plt.plot(history['val_f1'], label='Validation F1', color='orange')
+    plt.xlabel('Epochs')
+    plt.ylabel('F1 Score')
+    plt.title('Validation F1 Score Over Epochs')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig(os.path.join(save_dir, 'f1_history.png'))
+    plt.close()
+
+def save_confusion_matrix_plot(y_true, y_pred, class_names, save_dir):
+    """Plots and saves confusion matrix."""
+    cm = confusion_matrix(y_true, y_pred)
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+                xticklabels=class_names, yticklabels=class_names)
+    plt.xlabel('Predicted Label')
+    plt.ylabel('True Label')
+    plt.title('Confusion Matrix')
+    plt.savefig(os.path.join(save_dir, 'confusion_matrix.png'))
+    plt.close()
+
 def main():
     set_seed(42)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -293,6 +329,8 @@ def main():
 
     best_f1 = 0
     patience_cnt = 0
+    
+    history = {'train_loss': [], 'val_loss': [], 'val_f1': []}
 
     print("Starting Training...")
     for epoch in range(EPOCHS):
@@ -300,6 +338,10 @@ def main():
         train_loss = train_epoch(model, train_loader, loss_fn, optimizer, scaler, device, len(train_set))
         val_loss, val_f1 = eval_model(model, val_loader, loss_fn, device)
         
+        history['train_loss'].append(train_loss)
+        history['val_loss'].append(val_loss)
+        history['val_f1'].append(val_f1)
+
         print(f"Train Loss: {train_loss:.4f} | Val Loss: {val_loss:.4f} | Val F1: {val_f1:.4f}")
         
         if val_f1 > best_f1:
@@ -313,10 +355,56 @@ def main():
                 print("Early stopping triggered.")
                 break
 
+    print("\nSaving Plots...")
+    save_training_history(history, OUTPUT_DIR)
+
     print("\nEvaluating on Test Set...")
     model.load_state_dict(torch.load(MODEL_SAVE_PATH))
     y_pred, y_test = get_predictions(model, test_loader, device)
-    print(classification_report(y_test, y_pred, target_names=CLASS_NAMES))
+    
+    y_pred_np = y_pred.numpy()
+    y_test_np = y_test.numpy()
+
+    save_confusion_matrix_plot(y_test_np, y_pred_np, CLASS_NAMES, OUTPUT_DIR)
+    
+    print("\nOverall Classification Report:")
+    print(classification_report(y_test_np, y_pred_np, target_names=CLASS_NAMES))
+
+    print("\nCalculating Per-Language Metrics...")
+    
+    test_languages = [x['language'] for x in test_data]
+    
+    df_results = pd.DataFrame({
+        'true': y_test_np,
+        'pred': y_pred_np,
+        'language': test_languages
+    })
+    
+    language_metrics = {}
+    
+    for lang in df_results['language'].unique():
+        subset = df_results[df_results['language'] == lang]
+
+        acc = accuracy_score(subset['true'], subset['pred'])
+        prec, rec, f1, _ = precision_recall_fscore_support(
+            subset['true'], subset['pred'], average='binary', zero_division=0
+        )
+        
+        language_metrics[lang] = {
+            'accuracy': float(acc),
+            'precision': float(prec),
+            'recall': float(rec),
+            'f1': float(f1),
+            'count': int(len(subset))
+        }
+        
+        print(f"[{lang}] F1: {f1:.4f} | Acc: {acc:.4f} | Count: {len(subset)}")
+
+    with open(LANGUAGE_METRICS_PATH, 'w') as f:
+        json.dump(language_metrics, f, indent=4)
+    
+    print(f"\nLanguage metrics saved to: {LANGUAGE_METRICS_PATH}")
+    print("Pipeline Finished.")
 
 if __name__ == "__main__":
     main()
