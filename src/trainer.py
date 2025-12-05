@@ -116,8 +116,10 @@ class CodeDataset(Dataset):
 
         ast_text = self.ast_parser.parse_to_flattened_ast(code_text, language)
 
+        if not ast_text.strip():
+            ast_text = ""
+
         encoding = self.tokenizer(
-            code_text,
             ast_text,
             add_special_tokens=True,
             max_length=self.max_len,
